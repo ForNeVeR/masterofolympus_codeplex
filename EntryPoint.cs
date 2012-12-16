@@ -10,8 +10,6 @@ namespace Master_Of_Olympus
         {
             using (Master_Of_Olympus game = new Master_Of_Olympus())
             {
-                //MapEditor map_editor = new MapEditor();
-                //map_editor.ShowDialog();
                 game.Run();
             }
         }

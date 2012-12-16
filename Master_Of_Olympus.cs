@@ -18,13 +18,14 @@ namespace Master_Of_Olympus
     {
         GraphicsDeviceManager graphics;
         SpriteBatch sprite_batch;
-        private int SCREEN_RESOLUTION_WIDTH;
-        private int SCREEN_RESOLUTION_HEIGHT;
+        private int m_screen_w;
+        private int m_screen_h;
         private Camera2D m_cam;
         private Map m_map;
         private SpriteFont menu_font;
         private bool m_draw_menu = true;
         private Logic m_logic;
+        private Audio m_audio;
 
         private void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
@@ -33,8 +34,8 @@ namespace Master_Of_Olympus
             e.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth = displayMode.Width;
             e.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight = displayMode.Height;
 
-            SCREEN_RESOLUTION_HEIGHT = displayMode.Height;
-            SCREEN_RESOLUTION_WIDTH = displayMode.Width;
+            m_screen_h = displayMode.Height;
+            m_screen_w = displayMode.Width;
         }
 
         public Master_Of_Olympus()
@@ -59,9 +60,10 @@ namespace Master_Of_Olympus
         protected override void Initialize()
         {
             m_cam = new Camera2D();
-            m_cam.Pos = new Vector2(SCREEN_RESOLUTION_WIDTH * 2, SCREEN_RESOLUTION_HEIGHT * 2);
-            m_map = new Map();
-            m_logic = new Logic(SCREEN_RESOLUTION_WIDTH, SCREEN_RESOLUTION_HEIGHT);
+            m_cam.Pos = new Vector2(m_screen_w * 2, m_screen_h * 2);
+            m_map = new Map(m_screen_w, m_screen_h);
+            m_audio = new Audio();
+            m_logic = new Logic(m_screen_w, m_screen_h, m_audio);
 
             base.Initialize();
         }
@@ -75,6 +77,7 @@ namespace Master_Of_Olympus
             sprite_batch = new SpriteBatch(GraphicsDevice);
             m_map.LoadAllTilesImages(Content);
             menu_font = Content.Load<SpriteFont>("Menu");
+            m_audio.LoadAudioContent(Content);
         }
 
         /// <summary>
@@ -105,7 +108,8 @@ namespace Master_Of_Olympus
             else
             {
                 m_logic.HandleEventsInGame(keyboard_state, mouse_state,
-                    m_cam.GetMouseAbsolutePos(GraphicsDevice, SCREEN_RESOLUTION_WIDTH, SCREEN_RESOLUTION_HEIGHT), m_cam);
+                    m_cam.GetMouseAbsolutePos(GraphicsDevice, m_screen_w, m_screen_h), m_cam);
+                m_map.UpdateUnits();
             }
 
             base.Update(gameTime);
@@ -117,23 +121,22 @@ namespace Master_Of_Olympus
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
-
-            sprite_batch.Begin();
-
             if (m_draw_menu)
             {
+                sprite_batch.Begin();
+
                 string str = "Soutenance 1\n\nMaster of Olympus for EPITA ...\ngarin_b ; monti_c ; abita_a ; assaad_a";
                 Vector2 pos = menu_font.MeasureString(str) / 2;
                 sprite_batch.DrawString(menu_font, str,
-                    new Vector2(SCREEN_RESOLUTION_WIDTH / 2, SCREEN_RESOLUTION_HEIGHT / 2),
+                    new Vector2(m_screen_w / 2, m_screen_h / 2),
                     Color.Chartreuse, 0, pos, 1.0f, SpriteEffects.None, 0.5f);
-            }
 
-            sprite_batch.End();
+                sprite_batch.End();
+            }
 
             if (!m_draw_menu)
             {
+                // Draw the terrain
                 sprite_batch.Begin(SpriteSortMode.BackToFront,
                             BlendState.AlphaBlend,
                             null,
@@ -142,7 +145,20 @@ namespace Master_Of_Olympus
                             null,
                             m_cam.GetTransformation(GraphicsDevice));
 
-                m_map.Draw(ref sprite_batch);
+                m_map.DrawTerrain(sprite_batch, m_cam);
+
+                sprite_batch.End();
+
+                // Draw UPON the terrain
+                sprite_batch.Begin(SpriteSortMode.BackToFront,
+                            BlendState.AlphaBlend,
+                            null,
+                            null,
+                            null,
+                            null,
+                            m_cam.GetTransformation(GraphicsDevice));
+
+                m_map.Draw(sprite_batch);
 
                 sprite_batch.End();
             }

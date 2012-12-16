@@ -14,7 +14,7 @@ namespace Master_Of_Olympus
             for (int i = 1; i <= 163; ++i)
             {
                 string str = "Zeus_land1_" + i.ToString("00000");
-                terrain_textures.Add(i, content_manager.Load<Texture2D>("Zeus_Terrain/" + str));
+                terrain_textures.Add(i, content_manager.Load<Texture2D>("Zeus_Terrain/land/" + str));
             }
         }
 

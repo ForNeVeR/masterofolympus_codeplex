@@ -44,7 +44,7 @@ namespace Master_Of_Olympus
 
         public Matrix GetTransformation(GraphicsDevice graphicsDevice)
         {
-            m_transform =       // Thanks to o KB o for this solution
+            m_transform =
               Matrix.CreateTranslation(new Vector3(-m_pos.X, -m_pos.Y, 0)) *
                                          Matrix.CreateRotationZ(Rotation) *
                                          Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *

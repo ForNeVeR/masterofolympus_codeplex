@@ -4,16 +4,22 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Master_Of_Olympus
 {
-    enum TileType
+    public enum TileType
     {
         CLEAN_FIELD, WATER, HYDRA
     }
 
+    public enum GenTileType
+    {
+        BUILDING, MONSTER, UNIT, GOD, SANCTUARY, CLEAN_FIELD
+    }
+
     public class Tile
     {
-        private Texture2D m_texture_tile;
-        private Vector2 m_pos_absolute;
-        private Vector2 m_pos_relative;
+        protected Texture2D m_texture_tile;
+        protected Vector2 m_pos_absolute;
+        protected Vector2 m_pos_relative;
+        protected TileType m_tile_type;
 
         public int Width
         {
@@ -30,14 +36,19 @@ namespace Master_Of_Olympus
             get { return m_pos_absolute; }
         }
 
-        public Tile(Vector2 pos_absolute, Vector2 pos_relative, Texture2D texture)
+        public Tile()
         {
+        }
+
+        public Tile(Vector2 pos_absolute, Vector2 pos_relative, Texture2D texture, TileType tile_type)
+        {
+            m_tile_type = tile_type;
             m_pos_absolute = pos_absolute;
             m_pos_relative = pos_relative;
             m_texture_tile = texture;
         }
 
-        public void Draw(ref SpriteBatch sprite_batch)
+        public void Draw(SpriteBatch sprite_batch)
         {
             sprite_batch.Draw(m_texture_tile, m_pos_absolute, Color.White);
         }
