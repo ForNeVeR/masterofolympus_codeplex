@@ -86,8 +86,6 @@ namespace Master_Of_Olympus
                 m_hydra.Update();
                 m_datetime_prev = DateTime.Now;
             }
-
-            //m_hydra.Update();
         }
 
         public void LoadAllTilesImages(ContentManager content_manager)
