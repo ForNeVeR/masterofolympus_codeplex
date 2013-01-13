@@ -6,7 +6,7 @@ namespace Master_Of_Olympus
 {
     public enum TileType
     {
-        CLEAN_FIELD, WATER, HYDRA
+        CLEAN_FIELD, CLEAN_FIELD_105, WATER, HYDRA
     }
 
     public enum GenTileType

@@ -44,7 +44,7 @@ namespace Master_Of_Olympus
             Content.RootDirectory = "Content";
 
             graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
 
             this.IsMouseVisible = true;
 

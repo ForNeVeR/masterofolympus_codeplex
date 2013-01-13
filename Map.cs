@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
@@ -29,6 +27,31 @@ namespace Master_Of_Olympus
         {
             public TileType type;
             public GenTileType gen_type;
+        }
+
+        public void SaveMap(string file_name)
+        {
+            string path = @"C:\Users\Adrien\Desktop\EPITA\Master_Of_Olympus\Master_Of_Olympus\Master_Of_Olympus\map_code\";
+            path += file_name;
+
+            if (!File.Exists(path))
+            {
+                using (StreamWriter file = new StreamWriter(path))
+                {
+                    for (int i = 0; i < 228; ++i)
+                    {
+                        for (int j = 0; j < 228; ++j)
+                        {
+                            int n = (int)Map.m_map_tiles_info[i, j].type;
+                            file.Write(n);
+                            if (j < 227)
+                                file.Write(" ");
+                        }
+
+                        file.WriteLine();
+                    }
+                }
+            }
         }
 
         public Map(int screen_w, int screen_h)
@@ -66,9 +89,15 @@ namespace Master_Of_Olympus
             if (y_offset > NB_TILES_Y)
                 y_offset = 228;
 
+            /*for (; i < x_offset; ++i)
+                for (j = y; j < y_offset; ++j)
+                    if (m_map_tiles_info[i,j].type == TileType.CLEAN_FIELD)
+                        m_terrain_tiles[i, j].Draw(sprite_batch);*/
+
             for (; i < x_offset; ++i)
                 for (j = y; j < y_offset; ++j)
-                    m_terrain_tiles[i, j].Draw(sprite_batch);
+                    if (m_map_tiles_info[i,j].type == TileType.CLEAN_FIELD_105)
+                        m_terrain_tiles[i, j].Draw(sprite_batch);
         }
 
         public void Draw(SpriteBatch sprite_batch)
@@ -99,22 +128,31 @@ namespace Master_Of_Olympus
             {
                 for (int j = 0; j < NB_TILES_Y; ++j)
                 {
-                    Texture2D texture_tile = Resources.terrain_textures[random.Next(106,163)];
+                    int rand = random.Next(105, 163);
+                    rand = 105;
+                    //int rand = random.Next(106, 163);
+                    Texture2D texture_tile = Resources.terrain_textures[rand];
                     Vector2 pos = new Vector2();
                     pos.X = (i * texture_tile.Width) + (j % 2) * (texture_tile.Width / 2);
                     pos.Y = j * (texture_tile.Height / 2);
 
                     m_terrain_tiles_absolute_pos[i, j] = pos;
-                    m_map_tiles_info[i, j].type = TileType.CLEAN_FIELD;
+                    if (rand == 105)
+                        m_map_tiles_info[i, j].type = TileType.CLEAN_FIELD_105;
+                    else
+                        m_map_tiles_info[i, j].type = TileType.CLEAN_FIELD;
+
                     m_map_tiles_info[i, j].gen_type = GenTileType.CLEAN_FIELD;
-                    m_terrain_tiles[i, j] = new Tile(pos, new Vector2(i, j), texture_tile, TileType.CLEAN_FIELD);
+                    m_terrain_tiles[i, j] = new Tile(pos, new Vector2(i, j), texture_tile, TileType.CLEAN_FIELD_105);
                 }
             }
 
+            SaveMap("test.txt");
+
             // Load Hydra
             Resources.LoadHydraTextures(content_manager);
-            m_hydra = new Hydra(m_terrain_tiles_absolute_pos[50, 50], new Vector2(50, 50), Resources.hydra_anim_right_textures[2], TileType.HYDRA);
-
+            m_hydra = new Hydra(m_terrain_tiles_absolute_pos[50, 50], new Vector2(50, 50),
+                Resources.hydra_anim_right_textures[2], TileType.HYDRA);
         }
     }
 }
